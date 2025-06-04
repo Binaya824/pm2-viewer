@@ -69,7 +69,7 @@
       if (ws) ws.close();
 
       protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-      ws = new WebSocket(protocol + window.location.host + '/logs');
+      ws = new WebSocket(protocol + window.location.host + '/pm2-logs/logs');
 
 
       ws.onopen = () => {
