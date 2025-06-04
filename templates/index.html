@@ -1,11 +1,56 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PM2 Log Viewer</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ansi_up@5.0.0/ansi_up.min.css">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #ccc;
+      font-family: monospace;
+      padding: 20px;
+      margin: 0;
+    }
+    h2 { color: #fff; }
+    label, select {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    select {
+      background: #333;
+      color: #fff;
+      padding: 5px;
+      border: 1px solid #555;
+      border-radius: 4px;
+    }
+    #log {
+      background: #000;
+      border: 1px solid #444;
+      padding: 10px;
+      white-space: pre-wrap;
+      height: 80vh;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h2>PM2 Log Viewer</h2>
+  <label for="app-select">Select App:</label>
+  <select id="app-select"></select>
+  <div id="log"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ansi_up@5.0.0/ansi_up.min.js"></script>
+  <script>
     const logEl = document.getElementById('log');
     const select = document.getElementById('app-select');
     const ansi_up = new AnsiUp();
-    ansi_up.use_classes = false;
-  
+    ansi_up.use_classes = false; // Use inline styles to preserve real color codes from ANSI
+
     let ws;
-  
+
     fetch('/pm2-logs/apps')
       .then(res => res.json())
       .then(apps => {
@@ -19,38 +64,40 @@
           connectWebSocket(apps[0]);
         }
       });
-  
+
     function connectWebSocket(appName) {
       if (ws) ws.close();
-  
-      const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+
+      protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
       ws = new WebSocket(protocol + window.location.host + '/pm2-logs/logs');
-  
+
+
       ws.onopen = () => {
         ws.send(appName);
       };
-  
+
       ws.onmessage = (e) => {
         const isAtBottom = logEl.scrollHeight - logEl.scrollTop <= logEl.clientHeight + 20;
-  
+
         const html = ansi_up.ansi_to_html(e.data);
         const div = document.createElement('div');
         div.innerHTML = html;
         logEl.appendChild(div);
-  
+
         if (isAtBottom) {
             logEl.scrollTop = logEl.scrollHeight;
         }
       };
-  
+
       ws.onclose = () => {
         setTimeout(() => connectWebSocket(select.value), 2000);
       };
     }
-  
+
     select.addEventListener('change', () => {
       logEl.innerHTML = '';
       connectWebSocket(select.value);
     });
   </script>
-  
+</body>
+</html>
