@@ -4,7 +4,6 @@ from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash, generate_password_hash
 import subprocess
 import json
-import threading
 import time
 import os
 from dotenv import load_dotenv
@@ -15,8 +14,6 @@ app = Flask(__name__)
 sock = Sock(app)
 auth = HTTPBasicAuth()
 
-
-# Get credentials from environment
 admin_username = os.getenv("ADMIN_USERNAME")
 admin_password = os.getenv("ADMIN_PASSWORD")
 
@@ -29,12 +26,12 @@ def verify(username, password):
     if username in users and check_password_hash(users.get(username), password):
         return username
 
-@app.route('/')
+@app.route('/pm2-logs/')
 @auth.login_required
 def index():
     return render_template("index.html")
 
-@app.route('/apps')
+@app.route('/pm2-logs/apps')
 @auth.login_required
 def list_pm2_apps():
     try:
@@ -45,7 +42,7 @@ def list_pm2_apps():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@sock.route('/logs')
+@sock.route('/pm2-logs/logs')
 def logs(ws):
     app_name = ws.receive()
     if not app_name:
@@ -56,18 +53,17 @@ def logs(ws):
 
     try:
         with open(log_path, 'r') as f:
-            f.seek(0, os.SEEK_END)  # Go to end of file to get new logs only
+            f.seek(0, os.SEEK_END)
 
             while True:
                 line = f.readline()
                 if not line:
-                    time.sleep(0.01)  # minimal delay for real-time tailing
+                    time.sleep(0.01)
                     continue
 
                 try:
                     ws.send(line)
                 except Exception:
-                    # Client disconnected or error sending
                     break
     except FileNotFoundError:
         ws.send(f"Log file not found: {log_path}")
