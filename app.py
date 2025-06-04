@@ -29,12 +29,12 @@ def verify(username, password):
     if username in users and check_password_hash(users.get(username), password):
         return username
 
-@app.route('/')
+@app.route('/pm2-logs')
 @auth.login_required
 def index():
     return render_template("index.html")
 
-@app.route('/apps')
+@app.route('/pm2-logs/apps')
 @auth.login_required
 def list_pm2_apps():
     try:
