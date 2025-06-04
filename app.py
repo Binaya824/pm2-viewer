@@ -45,7 +45,7 @@ def list_pm2_apps():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@sock.route('/logs')
+@sock.route('/pm2-logs/logs')
 def logs(ws):
     app_name = ws.receive()
     if not app_name:
