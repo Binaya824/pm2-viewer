@@ -29,12 +29,12 @@ def verify(username, password):
     if username in users and check_password_hash(users.get(username), password):
         return username
 
-@app.route('/pm2-logs')
+@app.route('/')
 @auth.login_required
 def index():
     return render_template("index.html")
 
-@app.route('/pm2-logs/apps')
+@app.route('/apps')
 @auth.login_required
 def list_pm2_apps():
     try:
@@ -45,7 +45,7 @@ def list_pm2_apps():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@sock.route('/pm2-logs/logs')
+@sock.route('/logs')
 def logs(ws):
     app_name = ws.receive()
     if not app_name:
