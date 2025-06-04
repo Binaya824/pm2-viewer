@@ -68,7 +68,9 @@
     function connectWebSocket(appName) {
       if (ws) ws.close();
 
-      ws = new WebSocket(`ws://${location.host}/pm2-logs/logs`);
+      protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+      ws = new WebSocket(protocol + window.location.host + '/pm2-logs/logs');
+
 
       ws.onopen = () => {
         ws.send(appName);
