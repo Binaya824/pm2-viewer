@@ -73,7 +73,3 @@ def logs(ws):
         ws.send(f"Log file not found: {log_path}")
     except Exception as e:
         ws.send(f"Error reading log file: {e}")
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
