@@ -51,7 +51,7 @@
 
     let ws;
 
-    fetch('/apps')
+    fetch('/pm2-logs/apps')
       .then(res => res.json())
       .then(apps => {
         apps.forEach(app => {
@@ -68,7 +68,7 @@
     function connectWebSocket(appName) {
       if (ws) ws.close();
 
-      ws = new WebSocket(`ws://${location.host}/logs`);
+      ws = new WebSocket(`ws://${location.host}/pm2-logs/logs`);
 
       ws.onopen = () => {
         ws.send(appName);
