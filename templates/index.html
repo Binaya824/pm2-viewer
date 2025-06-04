@@ -51,7 +51,7 @@
 
     let ws;
 
-    fetch('/pm2-logs/apps')
+    fetch('/apps')
       .then(res => res.json())
       .then(apps => {
         apps.forEach(app => {
