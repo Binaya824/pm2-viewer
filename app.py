@@ -44,6 +44,7 @@ def list_pm2_apps():
 
 @sock.route('/pm2-logs/logs')
 def logs(ws):
+    print("WebSocket connection established for PM2 logs.")
     app_name = ws.receive()
     if not app_name:
         ws.send("No app name received.")
@@ -69,3 +70,6 @@ def logs(ws):
         ws.send(f"Log file not found: {log_path}")
     except Exception as e:
         ws.send(f"Error reading log file: {e}")
+
+# if __name__ == "__main__":
+#     app.run(debug=True, host='0.0.0.0', port=5000)
